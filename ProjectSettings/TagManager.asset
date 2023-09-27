@@ -50,6 +50,9 @@ TagManager:
   - name: Layer 3
     uniqueID: 4189426099
     locked: 0
+  - name: Enemy
+    uniqueID: 691884909
+    locked: 0
   - name: Player
     uniqueID: 2133822883
     locked: 0
