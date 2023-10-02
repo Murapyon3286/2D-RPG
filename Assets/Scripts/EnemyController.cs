@@ -25,6 +25,28 @@ public class EnemyController : MonoBehaviour
 	[SerializeField]
 	private BoxCollider2D area;
 
+	// プレイヤーを追いかける判定
+	[SerializeField, Tooltip("プレイヤーを追いかける？")]
+	private bool chase;
+
+	// プレイヤーを追いかけている判定
+	private bool isChasing;
+
+	// 追いかける速度、 気づく範囲
+	[SerializeField]
+	private float chaseSpeed, rangeToChase;
+
+	// プレイヤーの位置
+	private Transform target;
+
+	// 攻撃間隔
+	[SerializeField]
+	private float waitAfterHitting;
+
+	// 攻撃力
+	[SerializeField]
+	private int attackDamage;
+
   void Start()
   {
     // コンポーネント取得
@@ -33,33 +55,77 @@ public class EnemyController : MonoBehaviour
 
 		// タイマーの設定
 		waitCounter = waitTime;
+
+		// プレイヤーの位置を取得
+		target = GameObject.FindGameObjectWithTag("Player").transform;	// すべてのゲームオブジェクトから探し出すので処理が重い
   }
 
   void Update()
   {
-		// タイマーを減らしていき、移動先を決めるコード
-		if (waitCounter > 0)
+		// 追いかける判定次第ではプレイヤーを追いかける
+		if (!isChasing)
 		{
-			waitCounter -= Time.deltaTime;
-			rb.velocity = Vector2.zero;
-
-			if (waitCounter <= 0)
+			// タイマーを減らしていき、移動先を決めるコード
+			if (waitCounter > 0)
 			{
-				moveCounter = waitTime;
-				enemyAnim.SetBool("moving", true);
-				moveDir = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
-				moveDir.Normalize();
+				waitCounter -= Time.deltaTime;
+				rb.velocity = Vector2.zero;
+
+				if (waitCounter <= 0)
+				{
+					moveCounter = waitTime;
+					enemyAnim.SetBool("moving", true);
+					moveDir = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
+					moveDir.Normalize();
+				}
+			}
+			else
+			{
+				moveCounter -= Time.deltaTime;
+				rb.velocity = moveDir * moveSpeed;
+
+				if (moveCounter <= 0)
+				{
+					enemyAnim.SetBool("moving", false);
+					waitCounter = waitTime;
+				}
+			}
+
+			// Enemyがプレイヤーを追いかける判定に設定されているかどうか
+			if (chase)
+			{
+				// 気づく範囲より距離が近かったらプレイヤーを追いかける
+				if (Vector3.Distance(transform.position, target.transform.position) < rangeToChase)
+				{
+					isChasing = true;
+				}
 			}
 		}
 		else
 		{
-			moveCounter -= Time.deltaTime;
-			rb.velocity = moveDir * moveSpeed;
-
-			if (moveCounter <= 0)
+			if (waitCounter > 0)
 			{
-				enemyAnim.SetBool("moving", false);
+				waitCounter -= Time.deltaTime;
+				rb.velocity = Vector2.zero;
+
+				if (waitCounter <= 0)
+				{
+					enemyAnim.SetBool("moving", true);
+				}
+			}
+			else
+			{
+				moveDir = target.transform.position - transform.position;
+				moveDir.Normalize();
+				rb.velocity = moveDir * chaseSpeed;
+			}
+
+			// EnemyがPlayerを追いかけるのをあきらめる
+			if (Vector3.Distance(transform.position, target.transform.position) > rangeToChase)
+			{
+				isChasing = false;
 				waitCounter = waitTime;
+				enemyAnim.SetBool("moving", false);
 			}
 		}
 

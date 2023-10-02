@@ -395,6 +395,11 @@ MonoBehaviour:
   waitTime: 2
   walkTime: 2
   area: {fileID: 2099178773}
+  chase: 1
+  chaseSpeed: 5
+  rangeToChase: 5
+  waitAfterHitting: 3
+  attackDamage: 3
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -836,7 +841,7 @@ GameObject:
   - component: {fileID: 1028850467}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
