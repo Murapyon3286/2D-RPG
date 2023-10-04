@@ -133,4 +133,23 @@ public class EnemyController : MonoBehaviour
 		transform.position = new Vector3(Mathf.Clamp(transform.position.x, area.bounds.min.x + 1, area.bounds.max.x - 1),
 			Mathf.Clamp(transform.position.y, area.bounds.min.y + 1, area.bounds.max.y - 1), transform.position.z);
   }
+
+	/// <summary>
+	/// Õ“Ë”»’è
+	/// </summary>
+	/// <param name="collision"></param>
+	private void OnCollisionEnter2D(Collision2D collision)	// ˆø”collision‚Í‚Ô‚Â‚©‚Á‚½‘Šè‚Ìî•ñ
+	{
+		if (collision.gameObject.tag == "Player")
+		{
+			if (isChasing)
+			{
+				PlayerController player = collision.gameObject.GetComponent<PlayerController>();
+				player.KnockBack(transform.position);
+				player.DamagePlayer(attackDamage);
+				waitCounter = waitAfterHitting;
+				enemyAnim.SetBool("moving", false);
+			}
+		}
+	}
 }

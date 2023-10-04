@@ -22,6 +22,24 @@ public class PlayerController : MonoBehaviour
 
 	public int maxHealth;
 
+	// 吹き飛び判定
+	private bool isKnockingBack;
+
+	// 吹き飛ぶ方向
+	private Vector2 knockDir;
+
+	// 吹き飛び時間、吹き飛ぶ力
+	[SerializeField]
+	private float knockbackTime, knockbockForce;
+
+	// タイマー（吹き飛び）
+	private float knockbackCounter;
+
+	// 無敵時間、タイマー（無敵時間）
+	[SerializeField]
+	private float invincibilityTime;
+	private float invincibilityCounter;
+
 	void Start()
   {
     // HPの設定
@@ -33,6 +51,32 @@ public class PlayerController : MonoBehaviour
 
   void Update()
   {
+		// 無敵時間の判定と無敵時のコード取得
+		// 現在が無敵時間かどうか
+		if (invincibilityCounter > 0)
+		{
+			// 現在の経過時間から1フレーム（update関数が実行された時間）を引く
+			invincibilityCounter -= Time.deltaTime;
+		}
+
+		// 現在ノックバック中か？
+		if (isKnockingBack)
+		{
+			// playerに行動をさせたくないため、時間を引く
+			knockbackCounter -= Time.deltaTime;
+			rb.velocity = knockDir * knockbockForce;
+
+			// ノックバックの時間が終了したか？
+			if (knockbackCounter <= 0)
+			{
+				isKnockingBack = false;
+			}
+			else
+			{
+				return;
+			}
+		}
+
 		// 剛体
 		rb.velocity = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized * moveSpeed; // velocityは速度を扱う。Vector2はxとyを扱う。
 		if (rb.velocity != Vector2.zero) // 上下左右の速度がゼロではなくプレイヤーが動いているとき
@@ -84,4 +128,39 @@ public class PlayerController : MonoBehaviour
 			weaponAnim.SetTrigger("Attack");
 		}
   }
+
+	/// <summary>
+	/// 吹き飛び関数
+	/// </summary>
+	/// <param name="position"></param>
+	public void KnockBack(Vector3 position)
+	{
+		// 吹き飛ぶ時間を設定
+		knockbackCounter = knockbackTime;
+		isKnockingBack = true;
+
+		knockDir = transform.position - position;
+		knockDir.Normalize();
+	}
+
+	/// <summary>
+	/// 攻撃関数
+	/// </summary>
+	/// <param name="damage"></param>
+	public void DamagePlayer(int damage)
+	{
+		// 無敵時間ではない場合
+		if (invincibilityCounter <= 0)
+		{
+			currentHealth = Mathf.Clamp(currentHealth - damage, 0, maxHealth);
+			invincibilityCounter = invincibilityTime;
+
+			if (currentHealth == 0)
+			{
+				gameObject.SetActive(false);
+			}
+		}
+
+		GameManager.instance.UpdateHealthUI();
+	}
 }
