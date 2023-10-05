@@ -47,6 +47,24 @@ public class EnemyController : MonoBehaviour
 	[SerializeField]
 	private int attackDamage;
 
+	// 現在のHP
+	[SerializeField]
+	private int currentHealth;
+
+	// ノックバック中判定
+	private bool isKnockingBack;
+
+	// 吹き飛び時間、吹き飛ぶ力
+	[SerializeField]
+	private float knockBackTime, knockBackForce;
+
+	// タイマー
+	private float knockBackCounter;
+
+	// 吹き飛ぶ方向
+	private Vector2 knockDir;
+	
+
   void Start()
   {
     // コンポーネント取得
@@ -62,6 +80,21 @@ public class EnemyController : MonoBehaviour
 
   void Update()
   {
+		if (isKnockingBack)
+		{
+			if (knockBackCounter > 0)
+			{
+				knockBackCounter -= Time.deltaTime;
+				rb.velocity = knockDir * knockBackForce;
+			}
+			else
+			{
+				rb.velocity = Vector2.zero;
+				isKnockingBack = false;
+			}
+			return;
+		}
+
 		// 追いかける判定次第ではプレイヤーを追いかける
 		if (!isChasing)
 		{
@@ -151,5 +184,35 @@ public class EnemyController : MonoBehaviour
 				enemyAnim.SetBool("moving", false);
 			}
 		}
+	}
+
+	/// <summary>
+	/// ノックバック関数
+	/// </summary>
+	/// <param name="position"></param>
+	public void KnockBack(Vector3 position)
+	{
+		isKnockingBack = true;
+		knockBackCounter = knockBackTime;
+		knockDir = transform.position - position;
+		knockDir.Normalize();
+		enemyAnim.SetBool("moving", false);
+	}
+
+	/// <summary>
+	/// ダメージ関数
+	/// </summary>
+	/// <param name="damage"></param>
+	/// <param name="position"></param>
+	public void TakeDamage(int damage, Vector3 position)
+	{
+		currentHealth -= damage;
+
+		if (currentHealth <= 0)
+		{
+			Destroy(gameObject);
+		}
+
+		KnockBack(position);
 	}
 }
