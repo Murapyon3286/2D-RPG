@@ -63,6 +63,14 @@ public class EnemyController : MonoBehaviour
 
 	// 吹き飛ぶ方向
 	private Vector2 knockDir;
+
+	// ドロップアイテム
+	[SerializeField]
+	private GameObject portion;
+
+	// ドロップ率
+	[SerializeField]
+	private float healthDropChance;
 	
 
   void Start()
@@ -210,6 +218,12 @@ public class EnemyController : MonoBehaviour
 
 		if (currentHealth <= 0)
 		{
+			// ドロップ判定を追加
+			if (Random.Range(0, 100) < healthDropChance && portion != null)
+			{
+				Instantiate(portion, transform.position, transform.rotation);
+			}
+
 			Destroy(gameObject);
 		}
 

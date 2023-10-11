@@ -40,6 +40,20 @@ public class PlayerController : MonoBehaviour
 	private float invincibilityTime;
 	private float invincibilityCounter;
 
+	// スタミナ量、スタミナ回復速度
+	public float totalStamina, recoverySpeed;
+
+	// 現在のスタミナ
+	[System.NonSerialized]
+	public float currentStamina;
+
+	// ダッシュの速度、長さ、スタミナ消費量
+	[SerializeField]
+	private float dashSpeed, dashLength, dashCost;
+
+	// タイマー、移動時にかける用変数
+	private float dashCounter, activeMoveSpeed;
+
 	void Start()
   {
     // HPの設定
@@ -47,7 +61,12 @@ public class PlayerController : MonoBehaviour
 
 		// GameManagerからUI更新関数を呼び出す
 		GameManager.instance.UpdateHealthUI();
-  }
+
+		activeMoveSpeed = moveSpeed;
+
+		currentStamina = totalStamina;
+		GameManager.instance.UpdateHealthUI();
+	}
 
   void Update()
   {
@@ -78,7 +97,7 @@ public class PlayerController : MonoBehaviour
 		}
 
 		// 剛体
-		rb.velocity = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized * moveSpeed; // velocityは速度を扱う。Vector2はxとyを扱う。
+		rb.velocity = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized * activeMoveSpeed; // velocityは速度を扱う。Vector2はxとyを扱う。
 		if (rb.velocity != Vector2.zero) // 上下左右の速度がゼロではなくプレイヤーが動いているとき
 		{
 			if (Input.GetAxisRaw("Horizontal") != 0)
@@ -127,7 +146,31 @@ public class PlayerController : MonoBehaviour
 		{
 			weaponAnim.SetTrigger("Attack");
 		}
-  }
+
+		// ダッシュの判定（dashCounterがどのくらいあるのか）
+		if (dashCounter <= 0)
+		{
+			if (Input.GetKeyDown(KeyCode.Space) && currentStamina > dashCost)
+			{
+				activeMoveSpeed = dashSpeed;
+				dashCounter = dashLength;
+				currentStamina -= dashCost;
+				GameManager.instance.UpdateStaminaUI();
+			}
+		}
+		else
+		{
+			dashCounter -= Time.deltaTime;
+
+			if (dashCounter <= 0)
+			{
+				activeMoveSpeed = moveSpeed;
+			}
+		}
+
+		currentStamina = Mathf.Clamp(currentStamina + recoverySpeed * Time.deltaTime, 0, totalStamina);
+		GameManager.instance.UpdateStaminaUI();
+	}
 
 	/// <summary>
 	/// 吹き飛び関数
@@ -162,5 +205,20 @@ public class PlayerController : MonoBehaviour
 		}
 
 		GameManager.instance.UpdateHealthUI();
+	}
+
+	/// <summary>
+	/// アイテムとの衝突判定
+	/// </summary>
+	/// <param name="collision"></param>
+	private void OnTriggerEnter2D(Collider2D collision)
+	{
+		if (collision.tag == "Portion" && maxHealth != currentHealth && collision.GetComponent<Items>().waitTime <= 0)
+		{
+			Items items = collision.GetComponent<Items>();
+			currentHealth = Mathf.Clamp(currentHealth + items.healthItemRecoveryValue, 0, maxHealth);
+			GameManager.instance.UpdateHealthUI();
+			Destroy(collision.gameObject);
+		}
 	}
 }
