@@ -48,7 +48,30 @@ public class GameManager : MonoBehaviour
 
   void Update()
   {
-    
+		// 文字送りの処理を実装
+		if (dialogBox.activeInHierarchy)
+		{
+			if (Input.GetMouseButtonUp(1))
+			{
+				if (!justStarted)
+				{
+					currentLine++;
+
+					if (currentLine >= dialogLines.Length)
+					{
+						dialogBox.SetActive(false);
+					}
+					else
+					{
+						dialogText.text = dialogLines[currentLine];
+					}
+				}
+				else
+				{
+					justStarted = false;
+				}
+			}
+		}
   }
 
 	/// <summary>
@@ -82,5 +105,12 @@ public class GameManager : MonoBehaviour
 		justStarted = true;
 	}
 
-	// ダイアログの表示切替
+	/// <summary>
+	/// ダイアログの表示切替
+	/// </summary>
+	/// <param name="x"></param>
+	public void ShowdialogChange(bool x)
+	{
+		dialogBox.SetActive(x);
+	}
 }
