@@ -399,7 +399,7 @@ MonoBehaviour:
   chaseSpeed: 5
   rangeToChase: 5
   waitAfterHitting: 3
-  attackDamage: 3
+  attackDamage: 50
   currentHealth: 30
   knockBackTime: 0.3
   knockBackForce: 5

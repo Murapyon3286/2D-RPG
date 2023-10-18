@@ -201,6 +201,7 @@ public class PlayerController : MonoBehaviour
 			if (currentHealth == 0)
 			{
 				gameObject.SetActive(false);
+				GameManager.instance.Load();
 			}
 		}
 

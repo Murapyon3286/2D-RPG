@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 // ƒ‰ƒCƒuƒ‰ƒŠ‚Ì’Ç‰Á
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -112,5 +113,10 @@ public class GameManager : MonoBehaviour
 	public void ShowdialogChange(bool x)
 	{
 		dialogBox.SetActive(x);
+	}
+
+	public void Load()
+	{
+		SceneManager.LoadScene("Main");
 	}
 }
