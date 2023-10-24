@@ -4,6 +4,7 @@ using UnityEngine;
 // ライブラリの追加
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEditor.Build.Reporting;
 
 public class GameManager : MonoBehaviour
 {
@@ -42,6 +43,33 @@ public class GameManager : MonoBehaviour
 		}
 	}
 
+	// UI格納用
+	public GameObject statusPanel;
+
+	[SerializeField]
+	private Text hpText, stText, atText;
+
+	// weaponスクリプト格納
+	[SerializeField]
+	private Weapon weapon;
+
+	// 経験値、レベル
+	private int totalExp, currentLV;
+
+	// レベルアップに必要な経験値量
+	[SerializeField, Tooltip("レベルアップに必要な経験値")]
+	private int[] requiredExp;
+
+	// LevelUp時に呼ぶUI格納用
+	[SerializeField]
+	private GameObject levelUpText;
+
+	// levelUpTextを配置するためのcanvas
+	[SerializeField]
+	private Canvas canvas;
+
+
+
 	void Start()
   {
     
@@ -54,6 +82,7 @@ public class GameManager : MonoBehaviour
 		{
 			if (Input.GetMouseButtonUp(1))
 			{
+				SoundManager.instance.PlaySE(4);
 				if (!justStarted)
 				{
 					currentLine++;
@@ -71,6 +100,18 @@ public class GameManager : MonoBehaviour
 				{
 					justStarted = false;
 				}
+			}
+		}
+
+		if (Input.GetKeyDown(KeyCode.E))
+		{
+			if (statusPanel.activeInHierarchy)
+			{
+				CloseStatusPanel();
+			}
+			else
+			{
+				ShowStatusPanel();
 			}
 		}
   }
@@ -118,5 +159,59 @@ public class GameManager : MonoBehaviour
 	public void Load()
 	{
 		SceneManager.LoadScene("Main");
+	}
+
+	/// <summary>
+	/// ステータスUI表示関数
+	/// </summary>
+	public void ShowStatusPanel()
+	{
+		statusPanel.SetActive(true);
+		Time.timeScale = 0f;
+		// UI更新用関数の呼び出し
+		StatusUpdate();
+	}
+
+	/// <summary>
+	/// ステータスUI非表示関数
+	/// </summary>
+	public void CloseStatusPanel()
+	{
+		statusPanel.SetActive(false);
+		Time.timeScale = 1f;
+	}
+
+	/// <summary>
+	/// UI更新用関数
+	/// </summary>
+	public void StatusUpdate()
+	{
+		hpText.text = "HP : " + player.maxHealth;
+		stText.text = "スタミナ : " + player.totalStamina;
+		atText.text = "攻撃力 : " + weapon.attackDamage;
+	}
+
+	/// <summary>
+	/// 経験値アップ関数
+	/// </summary>
+	public void AddExp(int exp)
+	{
+		if (requiredExp.Length <= currentLV)
+		{
+			return;
+		}
+		totalExp += exp;
+
+		if (totalExp >= requiredExp[currentLV])
+		{
+			currentLV++;
+			player.maxHealth += 5;
+			player.totalStamina += 5;
+			weapon.attackDamage += 5;
+			// 経験値関数作成
+			GameObject levelUp = Instantiate(levelUpText);
+			levelUp.transform.SetParent(canvas.transform);
+			levelUp.transform.localPosition = player.transform.position + new Vector3(0, 100, 0);
+		}
 	}
 }

@@ -6,7 +6,7 @@ public class Weapon : MonoBehaviour
 {
 	// UŒ‚—Í
 	[SerializeField]
-	private int attackDamage;
+	public int attackDamage;
 
   void Start()
   {
@@ -28,6 +28,7 @@ public class Weapon : MonoBehaviour
 		{
 			// UŒ‚—p‚ÌŠÖ”‚ğŒÄ‚Ño‚·
 			collision.gameObject.GetComponent<EnemyController>().TakeDamage(attackDamage, transform.position);
+			SoundManager.instance.PlaySE(3);
 		}
 	}
 }

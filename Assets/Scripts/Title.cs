@@ -11,5 +11,6 @@ public class Title : MonoBehaviour
   public void GameStart()
 	{
 		SceneManager.LoadScene("Main");
+		SoundManager.instance.PlaySE(4);
 	}
 }

@@ -70,6 +70,12 @@ public class PlayerController : MonoBehaviour
 
   void Update()
   {
+		// ƒƒjƒ…[‚ðŠJ‚¢‚Ä‚¢‚é‚Æ‚«‚Í“®‚©‚È‚¢‚æ‚¤‚É‚·‚é
+		if (GameManager.instance.statusPanel.activeInHierarchy)
+		{
+			return;
+		}
+
 		// –³“GŽžŠÔ‚Ì”»’è‚Æ–³“GŽž‚ÌƒR[ƒhŽæ“¾
 		// Œ»Ý‚ª–³“GŽžŠÔ‚©‚Ç‚¤‚©
 		if (invincibilityCounter > 0)
@@ -197,10 +203,12 @@ public class PlayerController : MonoBehaviour
 		{
 			currentHealth = Mathf.Clamp(currentHealth - damage, 0, maxHealth);
 			invincibilityCounter = invincibilityTime;
+			SoundManager.instance.PlaySE(2);
 
 			if (currentHealth == 0)
 			{
 				gameObject.SetActive(false);
+				SoundManager.instance.PlaySE(0);
 				GameManager.instance.Load();
 			}
 		}
@@ -217,6 +225,7 @@ public class PlayerController : MonoBehaviour
 		if (collision.tag == "Portion" && maxHealth != currentHealth && collision.GetComponent<Items>().waitTime <= 0)
 		{
 			Items items = collision.GetComponent<Items>();
+			SoundManager.instance.PlaySE(1);
 			currentHealth = Mathf.Clamp(currentHealth + items.healthItemRecoveryValue, 0, maxHealth);
 			GameManager.instance.UpdateHealthUI();
 			Destroy(collision.gameObject);

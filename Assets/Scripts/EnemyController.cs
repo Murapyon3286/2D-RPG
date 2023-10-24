@@ -71,6 +71,16 @@ public class EnemyController : MonoBehaviour
 	// ドロップ率
 	[SerializeField]
 	private float healthDropChance;
+
+	// エフェクト格納用
+	[SerializeField]
+	private GameObject blood;
+
+	// 経験値
+	[SerializeField]
+	private int exp;
+
+
 	
 
   void Start()
@@ -218,6 +228,9 @@ public class EnemyController : MonoBehaviour
 
 		if (currentHealth <= 0)
 		{
+			Instantiate(blood, transform.position, transform.rotation);
+			// 経験値加算関数
+			GameManager.instance.AddExp(exp);
 			// ドロップ判定を追加
 			if (Random.Range(0, 100) < healthDropChance && portion != null)
 			{
