@@ -10868,8 +10868,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lines:
   - testtest
-  - not save
+  - save
   - see you
+  savePoint: 1
 --- !u!50 &8760566244656370424
 Rigidbody2D:
   serializedVersion: 4

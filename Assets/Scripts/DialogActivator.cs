@@ -11,6 +11,10 @@ public class DialogActivator : MonoBehaviour
 	// ダイアログの表示判定
 	private bool canActivator;
 
+	// セーブポイント判定
+	[SerializeField]
+	private bool savePoint;
+
   // Start is called before the first frame update
   void Start()
   {
@@ -23,6 +27,12 @@ public class DialogActivator : MonoBehaviour
 		if (Input.GetMouseButtonDown(1) && canActivator && !GameManager.instance.dialogBox.activeInHierarchy)
 		{
 			GameManager.instance.ShowDialog(lines);
+
+			// savePoint次第でセーブを行う
+			if (savePoint)
+			{
+				GameManager.instance.SaveStatus();
+			}
 		}
   }
 

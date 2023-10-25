@@ -72,7 +72,10 @@ public class GameManager : MonoBehaviour
 
 	void Start()
   {
-    
+		if (PlayerPrefs.HasKey("MaxHp"))
+		{
+			LoadStatus();
+		}
   }
 
   void Update()
@@ -213,5 +216,29 @@ public class GameManager : MonoBehaviour
 			levelUp.transform.SetParent(canvas.transform);
 			levelUp.transform.localPosition = player.transform.position + new Vector3(0, 100, 0);
 		}
+	}
+
+	/// <summary>
+	/// セーブ関数
+	/// </summary>
+	public void SaveStatus()
+	{
+		PlayerPrefs.SetInt("MaxHp", player.maxHealth);
+		PlayerPrefs.SetFloat("MaxSt", player.totalStamina);
+		PlayerPrefs.SetInt("At", weapon.attackDamage);
+		PlayerPrefs.SetInt("Level", currentLV);
+		PlayerPrefs.SetInt("Exp", totalExp);
+	}
+
+	/// <summary>
+	/// ロード関数
+	/// </summary>
+	public void LoadStatus()
+	{
+		player.maxHealth = PlayerPrefs.GetInt("MaxHp");
+		player.totalStamina = PlayerPrefs.GetFloat("MaxSt");
+		weapon.attackDamage = PlayerPrefs.GetInt("At");
+		currentLV = PlayerPrefs.GetInt("Level");
+		totalExp = PlayerPrefs.GetInt("Exp");
 	}
 }

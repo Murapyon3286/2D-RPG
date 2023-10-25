@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6262208484035641552}
   - component: {fileID: 268248794785996889}
   - component: {fileID: 7206156226061681656}
+  - component: {fileID: 7262726934605856558}
   m_Layer: 5
   m_Name: LevelUpText
   m_TagString: Untagged
@@ -101,3 +102,15 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7262726934605856558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2159270493551660843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d9166afab6883841b7e0c5dafc2b877, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
